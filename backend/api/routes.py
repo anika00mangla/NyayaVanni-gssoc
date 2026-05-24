@@ -107,7 +107,13 @@ async def upload_document(request: Request, file: UploadFile = File(...)):
             raise HTTPException(status_code=500, detail=f"File save failed: {str(e)}")
             
         # 4. Save metadata record to SQLite
-        save_document_record(session_id, doc_id, filename, local_path)
+        try:
+            save_document_record(session_id, doc_id, filename, local_path)
+        except Exception as e:
+            # Clean up file if database write fails
+            if os.path.exists(local_path):
+                os.remove(local_path)
+            raise HTTPException(status_code=500, detail=f"Failed to save document metadata: {str(e)}")
 
         return {"documentId": doc_id, "message": "Uploaded successfully"}
         
