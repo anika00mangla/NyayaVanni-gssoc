@@ -252,7 +252,7 @@ def chat_general(request: Request, chat_request: ChatRequest):
 
 @api_router.post("/chat/{document_id}")
 @limiter.limit(RATE_LIMIT_CHAT)
-def chat_with_document(document_id: str, chat_request: ChatRequest, http_request: Request):
+def chat_with_document(http_request: Request, document_id: str, chat_request: ChatRequest):
     """Send chat message with document context loaded server-side."""
     try:
         session_id = require_session_id(http_request)
